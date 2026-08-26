@@ -1,4 +1,4 @@
-# Flop PoUI Verifier -- a concrete Proof-of-Useful-Inference verification scheme.
+# Flop PoUI Verifier : a concrete Proof-of-Useful-Inference verification scheme.
 
 An independent, prototype exploring one of the open technical
 questions in Arthur Hayes' [Flop Network](https://flop.finance) announcement
