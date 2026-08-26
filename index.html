@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flop PoUI Verifier: interactive demo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+  :root {
+    --bg: #fffdf8; --surface: #f4f0e4; --border: #e3ddc9;
+    --text: #201d15; --text-secondary: #5f5a48; --text-muted: #8c8672;
+    --accent: #d85a30; --accent-dark: #993c1d;
+    --success-bg: #eaf3de; --success-text: #27500a;
+    --danger-bg: #fcebeb; --danger-text: #791f1f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, #fdf0e2 0%, transparent 40%),
+      radial-gradient(circle at 100% 20%, #eef2e0 0%, transparent 45%),
+      var(--bg);
+    color: var(--text);
+    max-width: 720px; margin: 0 auto; padding: 3.5rem 1.5rem 4rem;
+    line-height: 1.6; position: relative;
+  }
+  .top-links {
+    position: absolute; top: 1.25rem; right: 1.5rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .top-links a {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); text-decoration: none; transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .top-links a:hover { transform: translateY(-2px); background: var(--text); color: var(--bg); }
+  .top-links svg { width: 16px; height: 16px; }
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 27px; font-weight: 700; margin: 0 0 0.5rem; letter-spacing: -0.01em;
+  }
+  h1 .flop { color: var(--accent); }
+  .subtitle { color: var(--text-secondary); font-size: 15px; margin: 0 0 1.5rem; max-width: 560px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 500; padding: 4px 12px 4px 8px; border-radius: 20px;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text-secondary); margin-bottom: 1.75rem;
+  }
+  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .panel {
+    background: rgba(255,255,255,0.6); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem;
+    backdrop-filter: blur(6px);
+  }
+  .controls { display: grid; gap: 18px; margin-bottom: 1.25rem; }
+  .control-row { display: flex; align-items: center; gap: 12px; }
+  .control-row label { font-size: 14px; color: var(--text-secondary); width: 170px; flex-shrink: 0; }
+  input[type=range] {
+    flex: 1; -webkit-appearance: none; height: 4px; border-radius: 2px;
+    background: var(--border); outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; border: 3px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 16px; height: 16px; border-radius: 50%; background: var(--accent);
+    cursor: pointer; border: 3px solid var(--bg); box-shadow: 0 0 0 1px var(--accent);
+  }
+  .control-row output { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; min-width: 44px; text-align: right; }
+  button {
+    background: var(--text); color: var(--bg); border: none; border-radius: 10px;
+    padding: 11px 22px; font-size: 14px; font-weight: 600; cursor: pointer;
+    margin-bottom: 1.5rem; font-family: 'Space Grotesk', sans-serif;
+    transition: transform 0.12s ease, background 0.12s ease;
+  }
+  button:hover { background: var(--accent-dark); transform: translateY(-1px); }
+  button:active { transform: translateY(0); }
+  #verdict {
+    display: none; padding: 1rem 1.1rem; border-radius: 10px; margin-bottom: 1.5rem; font-size: 14px;
+  }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+  .card p:first-child { font-size: 12.5px; color: var(--text-secondary); margin: 0 0 4px; }
+  .card p:last-child { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin: 0; }
+  table { width: 100%; font-size: 13px; border-collapse: collapse; margin-bottom: 0.5rem; }
+  th { text-align: left; color: var(--text-secondary); font-weight: 500; padding: 6px 4px; }
+  td { padding: 7px 4px; border-top: 1px solid var(--border); }
+  td:not(:first-child), th:not(:first-child) { text-align: right; }
+  footer {
+    font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border);
+    padding-top: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+  footer a { color: var(--accent-dark); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  .credit { display: inline-flex; align-items: center; gap: 4px; }
+  @media (max-width: 480px) {
+    .cards { grid-template-columns: 1fr; }
+    .control-row label { width: 130px; font-size: 13px; }
+    .top-links { position: static; margin-bottom: 1rem; justify-content: flex-end; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-links">
+  <a href="https://x.com/Aaquibzy" target="_blank" rel="noopener" aria-label="X profile">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23.3 22H16.6l-5.2-6.8L5.4 22H2.3l8.1-9.3L1.5 2h6.9l4.7 6.2L18.9 2zm-1.2 18h1.7L7.4 4H5.6l12.1 16z"/></svg>
+  </a>
+  <a href="https://github.com/Aaquibzy/flop-poui-verifier" target="_blank" rel="noopener" aria-label="GitHub repo">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
+  </a>
+</div>
+
+<div class="badge"><span class="dot"></span>Independent prototype, not affiliated with Flop Labs</div>
+<h1>Flop <span class="flop">PoUI</span> Verifier</h1>
+<p class="subtitle">
+  A proposed verification scheme for Flop Network's "Proof-of-Useful-Inference":
+  spot check some jobs, double check a few, and punish cheaters hard enough that
+  cheating stops being worth it.
+Tune the dials, run the network, see who wins.
+</p>
+
+<div class="panel">
+  <div class="controls">
+    <div class="control-row">
+      <label for="spot">Spot-check rate</label>
+      <input type="range" id="spot" min="0" max="30" step="1" value="10">
+      <output id="spot-out">10%</output>
+    </div>
+    <div class="control-row">
+      <label for="redun">Redundancy rate</label>
+      <input type="range" id="redun" min="0" max="20" step="1" value="5">
+      <output id="redun-out">5%</output>
+    </div>
+    <div class="control-row">
+      <label for="slash">Slash multiplier</label>
+      <input type="range" id="slash" min="1" max="10" step="0.5" value="5">
+      <output id="slash-out">5.0x</output>
+    </div>
+  </div>
+
+  <button id="run">Run 2,000 simulated jobs</button>
+
+  <div id="verdict"></div>
+
+  <div id="results" style="display:none;">
+    <div class="cards">
+      <div class="card"><p>Honest miner net</p><p id="honest-net">–</p></div>
+      <div class="card"><p>Lazy cheater net</p><p id="lazy-net">–</p></div>
+      <div class="card"><p>Sneaky cheater net</p><p id="sneaky-net">–</p></div>
+    </div>
+    <table>
+      <tr><th>Miner type</th><th>Jobs done</th><th>Times caught</th><th>Catch rate</th></tr>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<footer>
+  <span>Full source and the Python simulator: <a href="https://github.com/Aaquibzy/flop-poui-verifier">github.com/Aaquibzy/flop-poui-verifier</a></span>
+  <span class="credit">Made by Aaquib <span style="color:var(--accent)">♥</span></span>
+</footer>
+
+<script>
+function groundTruth(seed, difficulty) {
+  var h = "seed:" + seed;
+  for (var i = 0; i < 3; i++) h = simpleHash(h);
+  return h + ":" + difficulty;
+}
+function simpleHash(s) {
+  var hash = 0;
+  for (var i = 0; i < s.length; i++) { hash = ((hash << 5) - hash) + s.charCodeAt(i); hash |= 0; }
+  return hash.toString(16);
+}
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function runSim(spotRate, redunRate, slashMult) {
+  var rng = mulberry32(42);
+  var difficulty = 200, nJobs = 2000;
+  var strategies = ["honest", "lazy", "adversarial"];
+  var stats = {};
+  strategies.forEach(function(s) { stats[s] = { jobs: 0, checked: 0, caught: 0, earned: 0, slashed: 0 }; });
+  for (var j = 0; j < nJobs; j++) {
+    var strat = strategies[Math.floor(rng() * 3)];
+    var truth = groundTruth(j, difficulty);
+    var claimed;
+    if (strat === "honest") claimed = truth;
+    else if (strat === "lazy") claimed = "fake:" + rng();
+    else claimed = rng() < 0.5 ? truth : groundTruth(j, Math.floor(difficulty / 2));
+    var correct = claimed === truth;
+    var roll = rng();
+    var checked = false, caught = false;
+    if (roll < redunRate || roll < redunRate + spotRate) {
+      checked = true;
+      if (!correct) caught = true;
+    }
+    var st = stats[strat];
+    st.jobs++;
+    if (checked) st.checked++;
+    if (caught) { st.caught++; st.slashed += slashMult; }
+    else { st.earned += 1; }
+  }
+  return stats;
+}
+
+var spotEl = document.getElementById("spot"), redunEl = document.getElementById("redun"), slashEl = document.getElementById("slash");
+var spotOut = document.getElementById("spot-out"), redunOut = document.getElementById("redun-out"), slashOut = document.getElementById("slash-out");
+spotEl.addEventListener("input", function() { spotOut.textContent = spotEl.value + "%"; });
+redunEl.addEventListener("input", function() { redunOut.textContent = redunEl.value + "%"; });
+slashEl.addEventListener("input", function() { slashOut.textContent = parseFloat(slashEl.value).toFixed(1) + "x"; });
+
+document.getElementById("run").addEventListener("click", function() {
+  var spot = parseFloat(spotEl.value) / 100, redun = parseFloat(redunEl.value) / 100, slash = parseFloat(slashEl.value);
+  var stats = runSim(spot, redun, slash);
+  var pCatch = 1 - (1 - spot) * (1 - redun);
+  var cheatSavings = 0.5;
+  var breakeven = pCatch > 0 ? cheatSavings / pCatch : Infinity;
+  var secure = slash >= breakeven;
+  var verdictEl = document.getElementById("verdict");
+  verdictEl.style.display = "block";
+  if (secure) {
+    verdictEl.style.background = "var(--success-bg)"; verdictEl.style.color = "var(--success-text)";
+    verdictEl.innerHTML = "<strong>Secure</strong> — cheating costs more than it saves. Break-even slash needed: " + breakeven.toFixed(2) + "x (you set " + slash.toFixed(1) + "x).";
+  } else {
+    verdictEl.style.background = "var(--danger-bg)"; verdictEl.style.color = "var(--danger-text)";
+    verdictEl.innerHTML = "<strong>Under-secured</strong> — cheating is currently profitable. Raise the slash multiplier to at least " + breakeven.toFixed(2) + "x, or check more jobs.";
+  }
+  document.getElementById("results").style.display = "block";
+  document.getElementById("honest-net").textContent = stats.honest.earned.toFixed(0);
+  document.getElementById("lazy-net").textContent = (stats.lazy.earned - stats.lazy.slashed).toFixed(0);
+  document.getElementById("sneaky-net").textContent = (stats.adversarial.earned - stats.adversarial.slashed).toFixed(0);
+  var body = document.getElementById("table-body");
+  body.innerHTML = "";
+  var labels = { honest: "Honest", lazy: "Lazy cheater", adversarial: "Sneaky cheater" };
+  ["honest", "lazy", "adversarial"].forEach(function(k) {
+    var s = stats[k];
+    var rate = s.checked ? (s.caught / s.checked * 100).toFixed(0) + "%" : "—";
+    var row = document.createElement("tr");
+    row.innerHTML = "<td>" + labels[k] + "</td><td>" + s.jobs + "</td><td>" + s.caught + "</td><td>" + rate + "</td>";
+    body.appendChild(row);
+  });
+});
+document.getElementById("run").click();
+</script>
+</body>
+</html>
