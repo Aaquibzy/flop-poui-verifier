@@ -97,8 +97,8 @@ picking a spot-check rate arbitrarily.
 
 ## Why this and not something else
 
-Flop's own materials list four participant types — miners, validators,
-agents, KOLs — with an explicit "no whitepaper yet" for the verification
+Flop's own materials list four participant types - miners, validators,
+agents, KOLs with an explicit "no whitepaper yet" for the verification
 layer. Content/social contributions are already being solicited directly
 by the project; this instead targets the specific unsolved technical gap,
 built independently and generically enough to be checked, argued with, or
