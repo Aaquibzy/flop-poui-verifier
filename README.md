@@ -1,4 +1,4 @@
-# Flop PoUI Verifier -- a concrete Proof-of-Useful-Inference verification scheme
+# Flop PoUI Verifier -- a concrete Proof-of-Useful-Inference verification scheme.
 
 An independent, prototype exploring one of the open technical
 questions in Arthur Hayes' [Flop Network](https://flop.finance) announcement
@@ -20,18 +20,18 @@ open design problem, not a token farming or airdrop eligibility task.
 
 Three primitives combined so no single one carries all the weight:
 
-1. **Commit-reveal** — miners commit `hash(output)` before revealing,
+1. **Commit-reveal** - miners commit `hash(output)` before revealing,
    so no one can copy another miner's answer for the same job.
-2. **Probabilistic spot-checking** — a tunable fraction of jobs get
+2. **Probabilistic spot-checking** - a tunable fraction of jobs get
    fully re-executed by a validator (optimistic-rollup style: assume
    correct unless caught).
-3. **Targeted redundancy** — a smaller fraction of (typically
+3. **Targeted redundancy** - a smaller fraction of (typically
    higher-value) jobs are sent to 2+ miners independently; disagreement
    triggers a validator tie-break.
 
 Detection is never 100%. The scheme is only sound if being caught is
 *expensive enough, weighted by the odds of getting caught*, to make
-cheating unprofitable in expectation — a standard optimistic-verification
+cheating unprofitable in expectation; a standard optimistic-verification
 argument, not a novel one. What's useful here is making that condition
 explicit and computable:
 
@@ -75,7 +75,7 @@ No dependencies beyond the Python 3 standard library.
 
 With adversarial miners saving ~50% of compute cost by cheating, the
 sweep finds that **5% spot-checking + an 8x slash multiplier** is the
-cheapest tested configuration that stays economically secure — meaning
+cheapest tested configuration that stays economically secure; meaning
 only ~9% of total network compute needs to be redundantly verified to
 deter cheating, rather than something much larger. That's the kind of
 concrete number a real network parameter choice needs, instead of
@@ -84,22 +84,22 @@ picking a spot-check rate arbitrarily.
 ## Honest limitations
 
 - `ground_truth()` here is a stand-in (a hash chain used as a
-  compute-cost proxy) for "run the actual model forward pass" — it
+  compute-cost proxy) for "run the actual model forward pass" - it
   captures the verification *economics*, not real inference determinism,
   floating-point non-reproducibility across hardware, or model-weight
   commitment, all of which a real deployment has to solve separately.
 - Miner strategies are simplified archetypes, not an adversarial-ML
   search for the most profitable cheat.
 - Reputation is tracked but not yet fed back into job routing or stake
-  requirements — a natural next extension.
+  requirements.
 - This assumes honest, rational validators. Validator collusion is a
   separate attack surface this prototype doesn't model.
 
 ## Why this and not something else
 
 Flop's own materials list four participant types - miners, validators,
-agents, KOLs with an explicit "no whitepaper yet" for the verification
-layer. Content/social contributions are already being solicited directly
+agents, KOLs for the verification layer.
+Content/social contributions are already being solicited directly
 by the project; this instead targets the specific unsolved technical gap,
 built independently and generically enough to be checked, argued with, or
 thrown away on its own merits.
