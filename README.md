@@ -1,20 +1,20 @@
-# Flop PoUI Verifier — a concrete Proof-of-Useful-Inference verification scheme
+# Flop PoUI Verifier - a concrete Proof-of-Useful-Inference verification scheme
 
-An independent, unofficial prototype exploring one of the open technical
+An independent, prototype exploring one of the open technical
 questions in Arthur Hayes' [Flop Network](https://flop.finance) announcement
 (Aug 2026): **how do you actually verify a miner's inference was computed
 correctly, without re-running all of it?**
 
 As of this writing, Flop Labs has published a landing page and a one-line
 description of "Proof-of-Useful-Inference," but no whitepaper and no
-verification spec — correctness checking, randomness handling, and
+verification spec-correctness checking, randomness handling, and
 slashing rules are explicitly undecided. This project is a proposal for
 that missing piece, plus a simulator that tests whether the proposal
 actually holds up economically.
 
-**This is not affiliated with Flop Labs / Arthur Hayes.** It's an
+**This is not affiliated with Flop Labs.** It's an
 independent technical exploration meant as a real contribution to the
-open design problem, not a token-farming or airdrop-eligibility task.
+open design problem, not a token farming or airdrop eligibility task.
 
 ## The scheme
 
